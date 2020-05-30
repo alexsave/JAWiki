@@ -8,10 +8,17 @@ const page = jjba;
 
 const loadPage = (page,cb) => {
     const filename = `cache/${page}.html`;
-    if(fs.existsSync(filename))
-        fs.readFile(filename, (err, data) => cb(data));
-        //cb(fs.readFileSync(filename));
+    if(fs.existsSync(filename)){
+        const stats = fs.statSync(filename);
+        const now = new Date().getTime();
+        const modi = stats.mtime.getTime();
+        console.log(now-modi);
 
+        if(now-modi < 60*60*24*1000){
+            fs.readFile(filename, (err, data) => cb(data));
+            return;
+        }
+    }
 
     const buffer = [];
     https.get(baseURL+encodeURIComponent(page), (res) => {
@@ -27,5 +34,5 @@ const loadPage = (page,cb) => {
 };
 
 loadPage(jjba, buff => {
-    console.log(buff.toString());
+    //console.log(buff.toString());
 });
