@@ -68,11 +68,13 @@ const parsePage = buff => {
 
 //finally the fun part
 const parseString = str => {
-    const hiragana = 'のい';
-    const katakana ='ジョン';
+    //const hiragana = 'のいなるがとにおすごくきでしたぼうけんてはばらっどれぶあかこもさをやりよ';
+    //const katakana ='ジョンデャプナルリミッキラツクイフィギュアタテオバレコスートダドシムブセサボロワチ×ノマエァビメカパ・';
+    const hiragana = /[\u3040-\u309f]/;
+    const katakana = /[\u30a0-\u30ff]/;
     const alpha = /[a-zA-Z]/;
     const num = /[0-9]/;
-    const delim = '\n  ';
+    const delim = '\n  『』。^.[]()「」/（）、:-〈〉：〜　#※';
 
     const dict = {};
 
@@ -98,9 +100,9 @@ const parseString = str => {
         let cType;
         if(delim.includes(c))
             cType = '0';
-        else if(katakana.includes(c))
+        else if(katakana.test(c))
             cType = 'k';
-        else if(hiragana.includes(c))
+        else if(hiragana.test(c))
             cType = 'h';
         else if(alpha.test(c))
             cType = 'a';
@@ -112,18 +114,23 @@ const parseString = str => {
         if(cType === lastType)
             run += c;
         else{
-            addCurr();
+            if(lastType === 'j')
+                run = '_' + run;
+            if(lastType !== '0')
+                addCurr();
+
             run = c;
             lastType = cType;
-
         }
 
 
     }
 
     const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
+    //const ranked = Object.entries(dict).sort((a,b) => a[0].length-b[0].length);
     ranked.forEach(o => {
-        if(o[1] > 1)
+        //if(o[1] > 1)
+        //if(o[0][0]==='_')
             console.log(o);
     });
     //console.log(ranked);
