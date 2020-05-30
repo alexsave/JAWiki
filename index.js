@@ -74,7 +74,9 @@ const parseString = str => {
     const katakana = /[\u30a0-\u30ff]/;
     const alpha = /[a-zA-Z]/;
     const num = /[0-9]/;
-    const delim = '\n  『』。^.[]()「」/（）、:-〈〉：〜　#※';
+    const delim = '\n  『』。^.[]()「」/（）、:-〈〉：〜　#※?%!《》【】",！_\\&＆+”“=@［］…<>○○�―\'×→—';
+    const punc = /[\u3000-\u303f]/;
+    const kanji = /[\u4e00-\u9faf\u3400-\u4dbf﨑]/;
 
     const dict = {};
 
@@ -98,7 +100,9 @@ const parseString = str => {
         const c = str.charAt(i);
 
         let cType;
-        if(delim.includes(c))
+        if(punc.test(c))
+            cType = '00';
+        else if(delim.includes(c))
             cType = '0';
         else if(katakana.test(c))
             cType = 'k';
@@ -108,15 +112,17 @@ const parseString = str => {
             cType = 'a';
         else if(num.test(c))
             cType = 'n';
-        else
+        else if(kanji.test(c))
             cType = 'j';
+        else
+            cType = '?';
 
         if(cType === lastType)
             run += c;
         else{
-            if(lastType === 'j')
-                run = '_' + run;
-            if(lastType !== '0')
+            if(lastType === '?')
+                run = '?' + run;
+            if(lastType !== '0' && lastType !== '00')
                 addCurr();
 
             run = c;
