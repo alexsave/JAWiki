@@ -68,19 +68,61 @@ const parsePage = buff => {
 
 //finally the fun part
 const parseString = str => {
+    const hiragana = 'のい';
+    const katakana ='ジョン';
+    const alpha =
+    const num =
+    const delim = '\n  ';
+
     const dict = {};
 
-    let current = '';
+    //this is for rudicmentary detecting changes in words
+    //a: alpha
+    //n: numberic
+    //h: hiragana
+    //k: katakana
+    //j: kanji
+    //0: delim or start
+    let lastType = '0';
+    let run = '';
+
+    const addCurr = () => {
+        if (!(run in dict))
+            dict[run] = 0;
+        dict[run]++;
+    }
 
     for(let i = 0; i < str.length; i++){
         const c = str.charAt(i);
-        if(!(c in dict))
-            dict[c] = 0;
-        dict[c]++;
+
+        let cType;
+        if(c in delim)
+            cType = '0';
+        else if(c in katakana)
+            cType = 'k';
+        else if(c in hiragana)
+            cType = 'h';
+        else if(/[a-zA-Z]/.test(c))
+            cType = 'a';
+        else if(/[0-9]/.test(c))
+            cType = 'n';
+        else
+            cType = 'j';
+
+        if(cType === lastType)
+            run += c;
+        else{
+            addCurr();
+            lastType = cType
+
+        }
+
+
     }
 
     const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
-    console.log(ranked);
+    ranked.forEach(o => console.log(o));
+    //console.log(ranked);
 };
 
 loadPage(jjba, parsePage);
