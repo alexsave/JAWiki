@@ -39,8 +39,7 @@ const parsePage = buff => {
     let theString = '';
     const dom = new JSDOM(buff);
     const window = dom.window;
-    const elTypes = [window.HTMLDivElement, window.HTMLTableElement, window.HTMLParagraphElement, window.HTMLHeadingElement, window.HTMLDListElement, window.HTMLUListElement];
-
+    //const elTypes = [window.HTMLDivElement, window.HTMLTableElement, window.HTMLParagraphElement, window.HTMLHeadingElement, window.HTMLDListElement, window.HTMLUListElement];
 
     const firstHeading = window.document.querySelector('#firstHeading');
     theString += firstHeading.textContent;
@@ -62,11 +61,26 @@ const parsePage = buff => {
             theString += el.textContent;
         else
             console.log(el);
-
-
-        //console.log(el);
-
     });
+
+    parseString(theString);
+};
+
+//finally the fun part
+const parseString = str => {
+    const dict = {};
+
+    let current = '';
+
+    for(let i = 0; i < str.length; i++){
+        const c = str.charAt(i);
+        if(!(c in dict))
+            dict[c] = 0;
+        dict[c]++;
+    }
+
+    const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
+    console.log(ranked);
 };
 
 loadPage(jjba, parsePage);
