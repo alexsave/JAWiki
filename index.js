@@ -70,8 +70,8 @@ const parsePage = buff => {
 const parseString = str => {
     const hiragana = 'のい';
     const katakana ='ジョン';
-    const alpha =
-    const num =
+    const alpha = /[a-zA-Z]/;
+    const num = /[0-9]/;
     const delim = '\n  ';
 
     const dict = {};
@@ -96,15 +96,15 @@ const parseString = str => {
         const c = str.charAt(i);
 
         let cType;
-        if(c in delim)
+        if(delim.includes(c))
             cType = '0';
-        else if(c in katakana)
+        else if(katakana.includes(c))
             cType = 'k';
-        else if(c in hiragana)
+        else if(hiragana.includes(c))
             cType = 'h';
-        else if(/[a-zA-Z]/.test(c))
+        else if(alpha.test(c))
             cType = 'a';
-        else if(/[0-9]/.test(c))
+        else if(num.test(c))
             cType = 'n';
         else
             cType = 'j';
@@ -113,7 +113,8 @@ const parseString = str => {
             run += c;
         else{
             addCurr();
-            lastType = cType
+            run = c;
+            lastType = cType;
 
         }
 
@@ -121,7 +122,10 @@ const parseString = str => {
     }
 
     const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
-    ranked.forEach(o => console.log(o));
+    ranked.forEach(o => {
+        if(o[1] > 1)
+            console.log(o);
+    });
     //console.log(ranked);
 };
 
