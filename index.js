@@ -1,3 +1,5 @@
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
 const https = require('https');
 const fs = require('fs');
 
@@ -33,6 +35,38 @@ const loadPage = (page,cb) => {
     }).on('error', e => console.log(e));
 };
 
-loadPage(jjba, buff => {
-    //console.log(buff.toString());
-});
+const parsePage = buff => {
+    let theString = '';
+    const dom = new JSDOM(buff);
+    const window = dom.window;
+    const elTypes = [window.HTMLDivElement, window.HTMLTableElement, window.HTMLParagraphElement, window.HTMLHeadingElement, window.HTMLDListElement, window.HTMLUListElement];
+
+
+    const firstHeading = window.document.querySelector('#firstHeading');
+    theString += firstHeading.textContent;
+
+    const output = dom.window.document.querySelector('.mw-parser-output');
+    Object.values(output.children).forEach(el => {
+        //dumb but hey
+        if(el instanceof window.HTMLDivElement)
+            theString += el.textContent;
+        else if(el instanceof window.HTMLTableElement)
+            theString += el.textContent;
+        else if(el instanceof window.HTMLParagraphElement)
+            theString += el.textContent;
+        else if(el instanceof window.HTMLHeadingElement)
+            theString += el.textContent;
+        else if(el instanceof window.HTMLDListElement)
+            theString += el.textContent;
+        else if(el instanceof window.HTMLUListElement)
+            theString += el.textContent;
+        else
+            console.log(el);
+
+
+        //console.log(el);
+
+    });
+};
+
+loadPage(jjba, parsePage);
