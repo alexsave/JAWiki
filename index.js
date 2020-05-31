@@ -6,8 +6,6 @@ const fs = require('fs');
 const baseURL = 'https://ja.wikipedia.org/wiki/';
 const jjba = 'ジョジョの奇妙な冒険';
 
-const page = jjba;
-
 const loadPage = (page,cb) => {
     const filename = `cache/${page}.html`;
     if(fs.existsSync(filename)){
@@ -52,9 +50,12 @@ const loadLinks = (buff, cb) => {
     outlinks = outlinks.filter(a => !!a);
     outlinks = Array.from(new Set(outlinks));
 
-    console.log(outlinks);
-
-
+    const loadRecu = () => {
+        const page = outlinks.pop();
+        if(page)
+            setTimeout(() => loadPage(page, loadRecu), 9000);
+    };
+    loadRecu()
 };
 
 const parsePage = (buff,cb) => {
@@ -166,4 +167,5 @@ const parseString = str => {
 
 //loadPage(jjba, s => parsePage(i,parseString));
 
+//one way to run this program: load a bunch of links
 loadPage(jjba, loadLinks);
