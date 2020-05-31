@@ -88,8 +88,15 @@ const parsePage = (buff,cb) => {
                 theString += el.textContent;
             else if(el instanceof window.HTMLUListElement)
                 theString += el.textContent;
+            else if(el instanceof window.HTMLOListElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLQuoteElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLAnchorElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLStyleElement){}
             else
-                console.log(el);
+                console.log(el, el.textContent);
         });
     }
 
