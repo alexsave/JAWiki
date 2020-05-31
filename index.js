@@ -57,7 +57,7 @@ const loadLinks = (buff, cb) => {
     const loadRecu = () => {
         const page = outlinks.pop();
         if(page)
-            setTimeout(() => loadPage(page, loadRecu), 9000);
+            setTimeout(() => loadPage(page, loadRecu), 12000);
     };
     loadRecu();
 };
@@ -69,28 +69,32 @@ const parsePage = (buff,cb) => {
     //const elTypes = [window.HTMLDivElement, window.HTMLTableElement, window.HTMLParagraphElement, window.HTMLHeadingElement, window.HTMLDListElement, window.HTMLUListElement];
 
     const firstHeading = window.document.querySelector('#firstHeading');
-    theString += firstHeading.textContent;
+    if(firstHeading)
+        theString += firstHeading.textContent;
 
     const output = dom.window.document.querySelector('.mw-parser-output');
-    Object.values(output.children).forEach(el => {
-        //dumb but hey
-        if(el instanceof window.HTMLDivElement)
-            theString += el.textContent;
-        else if(el instanceof window.HTMLTableElement)
-            theString += el.textContent;
-        else if(el instanceof window.HTMLParagraphElement)
-            theString += el.textContent;
-        else if(el instanceof window.HTMLHeadingElement)
-            theString += el.textContent;
-        else if(el instanceof window.HTMLDListElement)
-            theString += el.textContent;
-        else if(el instanceof window.HTMLUListElement)
-            theString += el.textContent;
-        else
-            console.log(el);
-    });
+    if(output){
+        Object.values(output.children).forEach(el => {
+            //dumb but hey
+            if(el instanceof window.HTMLDivElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLTableElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLParagraphElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLHeadingElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLDListElement)
+                theString += el.textContent;
+            else if(el instanceof window.HTMLUListElement)
+                theString += el.textContent;
+            else
+                console.log(el);
+        });
+    }
 
     cb(theString);
+    return theString;
 };
 
 //finally the fun part
@@ -160,16 +164,44 @@ const parseString = str => {
     }
 
     const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
+    return dict;
     //const ranked = Object.entries(dict).sort((a,b) => a[0].length-b[0].length);
-    ranked.forEach(o => {
-        //if(o[1] > 1)
-        //if(o[0][0]==='_')
-            console.log(o);
-    });
+    //ranked.forEach(o => {
+    //if(o[1] > 1)
+    //if(o[0][0]==='_')
+    //console.log(o);
+    //});
     //console.log(ranked);
 };
 
 //loadPage(jjba, s => parsePage(i,parseString));
 
 //one way to run this program: load a bunch of links
-loadPage(jjba, loadLinks);
+
+//loadPage(jjba, loadLinks);
+//another way, just look at the files we walready have
+const analyzeLocal = () => {
+    const files = fs.readdirSync('cache');
+    const dict = [];
+
+    files.forEach(f => {
+        console.log(f);
+        const buff = fs.readFileSync('cache/' + f);
+        const s = parsePage(buff, () => {});
+        const d = parseString(s);
+
+        Object.entries(d).forEach(e => {
+            if(!(e[0] in dict))
+                dict[e[0]] = 0;
+            dict[e[0]] += e[1];
+        });
+    });
+
+    const ranked = Object.entries(dict).sort((a,b) => a[1]-b[1]);
+    ranked.forEach(o => {
+        if(o[1] > 1)
+            console.log(o);
+    });
+}
+
+analyzeLocal();
