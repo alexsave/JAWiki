@@ -7,6 +7,7 @@ const baseURL = 'https://ja.wikipedia.org/wiki/';
 const jjba = 'ジョジョの奇妙な冒険';
 
 const loadPage = (page,cb) => {
+    console.log(`Loading ${page}`);
     const filename = `cache/${page}.html`;
     if(fs.existsSync(filename)){
         const stats = fs.statSync(filename);
@@ -29,6 +30,9 @@ const loadPage = (page,cb) => {
 
         res.on('end', () => {
             fs.writeFile(filename, buffer, () => cb(buffer));
+            //fs.writeFile(filename, buffer, () =>
+                //setTimeout(() => cb(buffer), 9000)
+            //);
         });
     }).on('error', e => console.log(e));
 };
@@ -55,7 +59,7 @@ const loadLinks = (buff, cb) => {
         if(page)
             setTimeout(() => loadPage(page, loadRecu), 9000);
     };
-    loadRecu()
+    loadRecu();
 };
 
 const parsePage = (buff,cb) => {
