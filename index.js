@@ -35,7 +35,29 @@ const loadPage = (page,cb) => {
     }).on('error', e => console.log(e));
 };
 
-const parsePage = buff => {
+const loadLinks = (buff, cb) => {
+    const dom = new JSDOM(buff);
+    const window = dom.window;
+
+    let outlinks = window.document.querySelectorAll('.mw-parser-output a[href^="/wiki/"]:not(.image)')
+    outlinks = Array.from(outlinks);
+    outlinks = outlinks.map(a => a.href);
+    outlinks = outlinks.map(a => a.substring(6));
+    outlinks = outlinks.map(a => {
+        if(a.includes(','))
+            return null;
+        else
+            return decodeURIComponent(a);
+    });
+    outlinks = outlinks.filter(a => !!a);
+    outlinks = Array.from(new Set(outlinks));
+
+    console.log(outlinks);
+
+
+};
+
+const parsePage = (buff,cb) => {
     let theString = '';
     const dom = new JSDOM(buff);
     const window = dom.window;
@@ -63,7 +85,7 @@ const parsePage = buff => {
             console.log(el);
     });
 
-    parseString(theString);
+    cb(theString);
 };
 
 //finally the fun part
@@ -142,4 +164,6 @@ const parseString = str => {
     //console.log(ranked);
 };
 
-loadPage(jjba, parsePage);
+//loadPage(jjba, s => parsePage(i,parseString));
+
+loadPage(jjba, loadLinks);
