@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "run": "node --max-old-space-size=4096 index.js",
+    "grm": "node --max-old-space-size=4096 grammar.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
